@@ -35,6 +35,8 @@ parser = argparse.ArgumentParser(
     epilog=examples)
 parser.add_argument("-p", "--pid", type=int, metavar="PID", dest="pid",
     help="trace this PID only")
+parser.add_argument("--ebpf", action="store_true",
+    help=argparse.SUPPRESS)
 args = parser.parse_args()
 debug = 0
 
