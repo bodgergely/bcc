@@ -1,33 +1,23 @@
 #!/usr/bin/python
 # @lint-avoid-python-3-compatibility-imports
 #
-# runqslower    Trace long process scheduling delays.
+# runqslower    Trace as processes migrate between CPUs.
 #               For Linux, uses BCC, eBPF.
 #
-# This script traces high scheduling delays between tasks being
-# ready to run and them running on CPU after that.
+# This script traces as tasks migrate between CPU
+# by taking note of the cpu the current process was
+# scheduled previously.
 #
-# USAGE: runqslower [-p PID] [min_us]
+# USAGE: migration [-p PID]
 #
 # REQUIRES: Linux 4.9+ (BPF_PROG_TYPE_PERF_EVENT support).
 #
-# This measures the time a task spends waiting on a run queue for a turn
-# on-CPU, and shows this time as a individual events. This time should be small,
-# but a task may need to wait its turn due to CPU load.
-#
-# This measures two types of run queue latency:
-# 1. The time from a task being enqueued on a run queue to its context switch
-#    and execution. This traces ttwu_do_wakeup(), wake_up_new_task() ->
-#    finish_task_switch() with either raw tracepoints (if supported) or kprobes
-#    and instruments the run queue latency after a voluntary context switch.
-# 2. The time from when a task was involuntary context switched and still
-#    in the runnable state, to when it next executed. This is instrumented
-#    from finish_task_switch() alone.
-#
+# Description: TODO
+# 
 # Copyright 2016 Cloudflare, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License")
 #
-# 02-May-2018   Ivan Babrou   Created this.
+# 27-Oct-2019   Gergely Bod   Created this.
 
 from __future__ import print_function
 from bcc import BPF
@@ -41,17 +31,12 @@ examples = """examples:
     ./runqslower -p 123  # trace pid 123 only
 """
 parser = argparse.ArgumentParser(
-    description="Trace high run queue latency",
+    description="Trace process cpu migrations.",
     formatter_class=argparse.RawDescriptionHelpFormatter,
     epilog=examples)
 parser.add_argument("-p", "--pid", type=int, metavar="PID", dest="pid",
     help="trace this PID only")
-parser.add_argument("min_us", nargs="?", default='10000',
-    help="minimum run queue latecy to trace, in ms (default 10000)")
-parser.add_argument("--ebpf", action="store_true",
-    help=argparse.SUPPRESS)
 args = parser.parse_args()
-min_us = int(args.min_us)
 debug = 0
 
 # define BPF program
