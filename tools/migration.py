@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # @lint-avoid-python-3-compatibility-imports
 #
-# runqslower    Trace as processes migrate between CPUs.
+# migration    Trace as processes migrate between CPUs.
 #               For Linux, uses BCC, eBPF.
 #
 # This script traces as tasks migrate between CPU
@@ -26,8 +26,7 @@ from time import strftime
 
 # arguments
 examples = """examples:
-    ./runqslower         # trace run queue latency higher than 10000 us (default)
-    ./runqslower 1000    # trace run queue latency higher than 1000 us
+    ./migration          # trace all process migrations system wide
     ./runqslower -p 123  # trace pid 123 only
 """
 parser = argparse.ArgumentParser(
